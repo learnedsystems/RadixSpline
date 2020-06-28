@@ -29,7 +29,7 @@ class RadixSpline {
         spline_points_(std::move(spline_points)) {}
 
   // Returns the estimated position of `key`.
-  size_t GetEstimatedPosition(const KeyType key) const {
+  double GetEstimatedPosition(const KeyType key) const {
     // Truncate to data boundaries.
     if (key <= min_key_) return 0;
     if (key >= max_key_) return num_keys_ - 1;
@@ -54,7 +54,7 @@ class RadixSpline {
     const size_t estimate = GetEstimatedPosition(key);
     const size_t begin = (estimate < max_error_) ? 0 : (estimate - max_error_);
     // `end` is exclusive.
-    const size_t end = (estimate + max_error_ + 1 > num_keys_) ? num_keys_ : (estimate + max_error_ + 1);
+    const size_t end = (estimate + max_error_ + 2 > num_keys_) ? num_keys_ : (estimate + max_error_ + 2);
     return SearchBound{begin, end};
   }
 

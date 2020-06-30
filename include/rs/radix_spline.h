@@ -11,6 +11,8 @@ namespace rs {
 template<class KeyType>
 class RadixSpline {
  public:
+  RadixSpline() = default;
+
   RadixSpline(KeyType min_key,
               KeyType max_key,
               size_t num_keys,
@@ -64,9 +66,6 @@ class RadixSpline {
   }
 
  private:
-  template<class, class> friend class MultiMap;
-  RadixSpline() = default;
-
   // Returns the index of the spline point that marks the end of the spline segment that contains the `key`:
   // `key` ∈ (spline[index - 1], spline[index]]
   size_t GetSplineSegment(const KeyType key) const {

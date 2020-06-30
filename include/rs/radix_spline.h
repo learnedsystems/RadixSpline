@@ -48,7 +48,7 @@ class RadixSpline {
 
     // Interpolate.
     const double key_diff = key - down.x;
-    return key_diff * slope + down.y;
+    return std::fma(key_diff, slope, down.y);
   }
 
   // Returns a search bound [begin, end) around the estimated position.

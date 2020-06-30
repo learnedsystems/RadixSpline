@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <limits>
+#include <cmath>
 
 #include "common.h"
 #include "radix_spline.h"
@@ -95,7 +96,7 @@ class Builder {
   static constexpr double precision = std::numeric_limits<double>::epsilon();
 
   static Orientation ComputeOrientation(const double dx1, const double dy1, const double dx2, const double dy2) {
-    const double expr = dy1 * dx2 - dy2 * dx1;
+    const double expr = std::fma(dy1, dx2, -std::fma(dy2, dx1, 0));
     if (expr > precision) return Orientation::CW;
     else if (expr < -precision) return Orientation::CCW;
     return Orientation::Collinear;

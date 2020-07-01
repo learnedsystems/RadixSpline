@@ -24,8 +24,9 @@ class Builder {
         prev_key_(min_key),
         prev_position_(0),
         prev_prefix_(0) {
-    // Initialize radix table.
-    radix_table_.resize((1ull << num_radix_bits_) + 1, 0);
+    // Initialize radix table, needs to contain all prefixes up to the largest key + 1.
+    const uint32_t max_prefix = (max_key - min_key) >> num_shift_bits_;
+    radix_table_.resize(max_prefix + 2, 0);
   }
 
   // Adds a key. Assumes that keys are stored in a dense array.
@@ -194,9 +195,10 @@ class Builder {
   }
 
   void FinalizeRadixTable() {
+    ++prev_prefix_;
     const uint32_t num_spline_points = spline_points_.size();
-    for (; prev_prefix_ != (1ull << num_radix_bits_); ++prev_prefix_)
-      radix_table_[prev_prefix_ + 1] = num_spline_points;
+    for (; prev_prefix_ < radix_table_.size(); ++prev_prefix_)
+      radix_table_[prev_prefix_] = num_spline_points;
   }
 
   const KeyType min_key_;

@@ -71,6 +71,7 @@ class RadixSpline {
   size_t GetSplineSegment(const KeyType key) const {
     // Narrow search range using radix table.
     const KeyType prefix = (key - min_key_) >> num_shift_bits_;
+    assert (prefix + 1 < radix_table_.size());
     const uint32_t begin = radix_table_[prefix];
     const uint32_t end = radix_table_[prefix + 1];
 

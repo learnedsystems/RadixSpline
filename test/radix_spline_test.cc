@@ -173,8 +173,8 @@ TYPED_TEST(RadixSplineTest, NoKey) {
   using KeyType = typename TestFixture::KeyType;
   const std::vector<KeyType> keys;
   const auto rs = CreateRadixSpline(keys);
-  // We expect the size to be the size of rs::RadixSpline and the size of the pre-allocated radix table.
-  EXPECT_EQ(rs.GetSize(), sizeof(rs::RadixSpline<KeyType>) + ((1ull << kNumRadixBits) + 1) * sizeof(uint32_t));
+  // We expect the size to be at most the size of rs::RadixSpline and the size of the pre-allocated radix table.
+  EXPECT_TRUE(rs.GetSize() <= sizeof(rs::RadixSpline<KeyType>) + ((1ull << kNumRadixBits) + 1) * sizeof(uint32_t));
 }
 
 TYPED_TEST(RadixSplineTest, SingleKey) {

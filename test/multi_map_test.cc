@@ -81,9 +81,8 @@ TEST(MultiMapTest, Random) {
   rs::MultiMap<uint64_t, uint64_t> map(entries.begin(), entries.end());
   std::multimap<uint64_t, uint64_t> ref(entries.begin(), entries.end());
 
-  for (size_t lookup = 0; lookup < kNumLookups; ++lookup) {
-    uint64_t lookup_key = distribution(randomness_generator);
-
+  // Look up every key in the generated range
+  for (size_t lookup_key = 0; lookup_key < kNumKeys * 10 + 10; ++lookup_key) {
     // Check lower bound
     auto map_iter = map.lower_bound(lookup_key);
     auto ref_iter = ref.lower_bound(lookup_key);

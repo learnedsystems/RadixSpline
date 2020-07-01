@@ -205,6 +205,10 @@ class NonOwningMultiMap {
     return result;
   }
 
+  size_t GetSizeInByte() const {
+    return rs_.GetSize();
+  }
+
  private:
   const vector<element_type>& data_;
   rs::RadixSpline<KeyType> rs_;
@@ -230,7 +234,6 @@ int main(int argc, char** argv) {
   vector<uint64_t> keys = util::load_data<uint64_t>(data_file);
   vector<pair<uint64_t, uint64_t>> elements = util::add_values(keys);
   vector<Lookup<uint64_t>> lookups = util::load_data<Lookup<uint64_t>>(lookup_file);
-  cout << lookups.size() << endl;
 
   // Run benchmark
   for (uint32_t size_config = 1; size_config <= 10; size_config++) {
@@ -258,6 +261,7 @@ int main(int argc, char** argv) {
          << " data_file: " << data_file
          << " lookup_file: " << lookup_file
          << " size_config: " << size_config
+         << " used_memory[MB]: " << (map.GetSizeInByte() / 1000) / 1000.0
          << " build_time[s]: " << (build_ns / 1000 / 1000) / 1000.0
          << " ns/lookup: " << lookup_ns / lookups.size() << endl;
   }

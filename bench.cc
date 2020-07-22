@@ -9,7 +9,7 @@ using namespace std;
 
 namespace rs_manual_tuning {
 
-// Returns <max_error, #radix_bits>
+// Returns <num_radix_bits, max_error>
 pair<uint64_t, uint64_t> GetTuning(const string& data_filename, uint32_t size_scale) {
   string cut = data_filename;
 
@@ -19,103 +19,110 @@ pair<uint64_t, uint64_t> GetTuning(const string& data_filename, uint32_t size_sc
     cut.erase(cut.begin(), cut.begin() + pos + 1);
   }
 
-  // Normal
-  if (cut == "normal_200M_uint64"
-      || cut == "normal_400M_uint64"
-      || cut == "normal_600M_uint64"
-      || cut == "normal_800M_uint64"
-      || cut == "normal_200M_uint32") {
-    if (size_scale == 1) return make_pair(32, 18);
-    if (size_scale == 2) return make_pair(16, 18);
-    if (size_scale == 3) return make_pair(8, 18);
-    if (size_scale == 4) return make_pair(4, 18);
-    if (size_scale == 5) return make_pair(1, 18);
-    if (size_scale == 6) return make_pair(1, 17);
-    if (size_scale == 7) return make_pair(1, 16);
-    if (size_scale == 8) return make_pair(1, 15);
-    if (size_scale == 9) return make_pair(1, 14);
-    if (size_scale == 10) return make_pair(1, 13);
+  // TODO books32
+
+  using Configs = const vector<pair<size_t, size_t>>;
+
+  // Books (or amazon in the paper)
+  if (cut == "books_200M_uint64") {
+    Configs configs = {{25, 2},
+                       {22, 4},
+                       {23, 8},
+                       {24, 20},
+                       {22, 20},
+                       {22, 45},
+                       {15, 40},
+                       {20, 95},
+                       {16, 95},
+                       {12, 135}};
+    return configs[size_scale - 1];
   }
 
-  // Lognormal
-  if (cut == "lognormal_200M_uint32") return make_pair(1, 20);
-  if (cut == "lognormal_200M_uint64") return make_pair(1, 25);
+  if (cut == "books_400M_uint64") {
+    Configs configs = {{19, 4},
+                       {24, 10},
+                       {25, 25},
+                       {24, 35},
+                       {22, 40},
+                       {22, 85},
+                       {18, 85},
+                       {20, 190},
+                       {13, 185},
+                       {4, 270}};
+    return configs[size_scale - 1];
+  }
 
-  // Uniform dense
-  if (cut == "uniform_dense_200M_uint32") return make_pair(0, 15);
-  if (cut == "uniform_dense_200M_uint64") return make_pair(0, 15);
+  if (cut == "books_600M_uint64") {
+    Configs configs = {{19, 6},
+                       {24, 15},
+                       {22, 25},
+                       {24, 55},
+                       {22, 60},
+                       {22, 125},
+                       {21, 190},
+                       {14, 185},
+                       {17, 300},
+                       {17, 300}};
+    return configs[size_scale - 1];
+  }
 
-  // Uniform sparse
-  if (cut == "uniform_sparse_200M_uint32") return make_pair(6, 24);
-  if (cut == "uniform_sparse_200M_uint64") return make_pair(5, 25);
+  if (cut == "books_800M_uint64") {
+    Configs configs = {{21, 8},
+                       {24, 20},
+                       {25, 50},
+                       {24, 70},
+                       {22, 80},
+                       {21, 125},
+                       {21, 255},
+                       {20, 380},
+                       {15, 375},
+                       {15, 375}};
+    return configs[size_scale - 1];
+  }
 
-  // Osm
-  if (cut == "osm_cellids_200M_uint64"
-      || cut == "osm_cellids_400M_uint64"
-      || cut == "osm_cellids_600M_uint64"
-      || cut == "osm_cellids_800M_uint64") {
-    if (size_scale == 1) return make_pair(13, 25);
-    if (size_scale == 2) return make_pair(26, 23);
-    if (size_scale == 3) return make_pair(32, 19);
-    if (size_scale == 4) return make_pair(64, 18);
-    if (size_scale == 5) return make_pair(128, 18);
-    if (size_scale == 6) return make_pair(256, 16);
-    if (size_scale == 7) return make_pair(512, 15);
-    if (size_scale == 8) return make_pair(2 * 1024, 14);
-    if (size_scale == 9) return make_pair(2 * 2048, 3);
-    if (size_scale == 10) return make_pair(2 * 4096, 3);
+  // Facebook
+  if (cut == "fb_200M_uint64") {
+    Configs configs = {{20, 2},
+                       {25, 9},
+                       {22, 10},
+                       {23, 35},
+                       {21, 45},
+                       {18, 70},
+                       {20, 265},
+                       {15, 260},
+                       {15, 260},
+                       {15, 260}};
+    return configs[size_scale - 1];
+  }
+
+  // OSM
+  if (cut == "osm_cellids_200M_uint64") {
+    Configs configs = {{27, 7},
+                       {24, 4},
+                       {25, 25},
+                       {24, 50},
+                       {23, 95},
+                       {22, 185},
+                       {21, 365},
+                       {15, 165},
+                       {13, 325},
+                       {13, 325}};
+    return configs[size_scale - 1];
   }
 
   // Wiki
   if (cut == "wiki_ts_200M_uint64") {
-    if (size_scale == 1) return make_pair(9, 21);
-    if (size_scale == 2) return make_pair(10, 18);
-    if (size_scale == 3) return make_pair(32, 18);
-    if (size_scale == 4) return make_pair(48, 18);
-    if (size_scale == 5) return make_pair(84, 18);
-    if (size_scale == 6) return make_pair(256, 16);
-    if (size_scale == 7) return make_pair(512, 15);
-    if (size_scale == 8) return make_pair(2 * 1024, 14);
-    if (size_scale == 9) return make_pair(2 * 2048, 3);
-    if (size_scale == 10) return make_pair(2 * 4096, 3);
-  }
-
-  // Books (or amazon in the paper)
-  if (cut == "books_200M_uint32") return make_pair(14, 20);
-  if (cut == "books_200M_uint64"
-      || cut == "books_400M_uint64"
-      || cut == "books_600M_uint64"
-      || cut == "books_800M_uint64"
-      || cut == "books_200M_uint32") {
-
-    // TODO this is the original optimal config, but it gives wrong results.
-    // if (size_scale == 1) return make_pair(11, 22);
-    if (size_scale == 1) return make_pair(64, 18);
-    if (size_scale == 2) return make_pair(82, 18);
-    if (size_scale == 3) return make_pair(98, 18);
-    if (size_scale == 4) return make_pair(256, 18);
-    if (size_scale == 5) return make_pair(512, 16);
-    if (size_scale == 6) return make_pair(1024, 14);
-    if (size_scale == 7) return make_pair(1024, 12);
-    if (size_scale == 8) return make_pair(2 * 1024, 10);
-    if (size_scale == 9) return make_pair(2 * 2048, 3);
-    if (size_scale == 10) return make_pair(2 * 4096, 3);
-
-  }
-
-  // Fb
-  if (cut == "fb_200M_uint64" || cut == "fb_200M_uint32") {
-    if (size_scale == 1) return make_pair(2, 25);
-    if (size_scale == 2) return make_pair(4, 22);
-    if (size_scale == 3) return make_pair(10, 20);
-    if (size_scale == 4) return make_pair(32, 18);
-    if (size_scale == 5) return make_pair(128, 18);
-    if (size_scale == 6) return make_pair(512, 15);
-    if (size_scale == 7) return make_pair(1024, 14);
-    if (size_scale == 8) return make_pair(2 * 1024, 12);
-    if (size_scale == 9) return make_pair(2 * 2048, 3);
-    if (size_scale == 10) return make_pair(2 * 4096, 3);
-
+    Configs configs = {{27, 8},
+                       {26, 15},
+                       {25, 20},
+                       {24, 25},
+                       {23, 40},
+                       {22, 70},
+                       {21, 125},
+                       {20, 250},
+                       {11, 45},
+                       {17, 135}};
+    return configs[size_scale - 1];
   }
 
   cerr << "No tuning config for this file and size_config" << endl;
@@ -165,7 +172,6 @@ static vector<pair<uint64_t, uint64_t>> add_values(const vector<KeyType>& keys) 
 
 namespace {
 
-// A drop-in replacement for multimap. Internally creates a sorted copy of the data.
 template<class KeyType, class ValueType>
 class NonOwningMultiMap {
  public:
@@ -200,7 +206,7 @@ class NonOwningMultiMap {
     auto iter = lower_bound(key);
     while (iter != data_.end() && iter->first == key) {
       result += iter->second;
-      iter++;
+      ++iter;
     }
     return result;
   }
@@ -236,18 +242,17 @@ int main(int argc, char** argv) {
   vector<Lookup<uint64_t>> lookups = util::load_data<Lookup<uint64_t>>(lookup_file);
 
   // Run benchmark
-  for (uint32_t size_config = 1; size_config <= 10; size_config++) {
+  for (uint32_t size_config = 1; size_config <= 10; ++size_config) {
     // Build RS
     auto build_begin = chrono::high_resolution_clock::now();
     auto tuning = rs_manual_tuning::GetTuning(data_file, size_config);
-    NonOwningMultiMap<uint64_t, uint64_t> map(elements, tuning.second, tuning.first);
+    NonOwningMultiMap<uint64_t, uint64_t> map(elements, tuning.first, tuning.second);
     auto build_end = chrono::high_resolution_clock::now();
 
     // Run queries
     auto lookup_begin = chrono::high_resolution_clock::now();
-    uint64_t sum = 0;
     for (const Lookup<uint64_t>& lookup_iter : lookups) {
-      uint64_t sum = map.sum_up(lookup_iter.key);
+      const uint64_t sum = map.sum_up(lookup_iter.key);
       if (sum != lookup_iter.value) {
         cerr << "wrong result!" << endl;
         throw "error";
@@ -268,4 +273,3 @@ int main(int argc, char** argv) {
 
   return 0;
 }
-

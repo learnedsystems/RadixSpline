@@ -19,11 +19,23 @@ pair<uint64_t, uint64_t> GetTuning(const string& data_filename, uint32_t size_sc
     cut.erase(cut.begin(), cut.begin() + pos + 1);
   }
 
-  // TODO books32
-
   using Configs = const vector<pair<size_t, size_t>>;
 
   // Books (or amazon in the paper)
+  if (cut == "books_200M_uint32") {
+    Configs configs = {{26, 3},
+                       {22, 3},
+                       {20, 5},
+                       {23, 15},
+                       {22, 25},
+                       {20, 30},
+                       {16, 40},
+                       {19, 95},
+                       {15, 95},
+                       {9, 135}};
+    return configs[size_scale - 1];
+  }
+
   if (cut == "books_200M_uint64") {
     Configs configs = {{25, 2},
                        {22, 4},
@@ -154,12 +166,12 @@ static vector<T> load_data(const string& filename,
 
 // Generates deterministic values for keys.
 template<class KeyType>
-static vector<pair<uint64_t, uint64_t>> add_values(const vector<KeyType>& keys) {
-  vector<pair<uint64_t, uint64_t>> result;
+static vector<pair<KeyType, uint64_t>> add_values(const vector<KeyType>& keys) {
+  vector<pair<KeyType, uint64_t>> result;
   result.reserve(keys.size());
 
   for (uint64_t i = 0; i < keys.size(); ++i) {
-    pair<uint64_t, uint64_t> row;
+    pair<KeyType, uint64_t> row;
     row.first = keys[i];
     row.second = i;
 
@@ -226,6 +238,47 @@ struct Lookup {
   uint64_t value;
 };
 
+template<class KeyType>
+void Run(const string& data_file, const string lookup_file) {
+  // Load data
+  vector<KeyType> keys = util::load_data<KeyType>(data_file);
+  vector<pair<KeyType, uint64_t>> elements = util::add_values(keys);
+  vector<Lookup<KeyType>> lookups = util::load_data<Lookup<KeyType>>(lookup_file);
+
+  for (uint32_t size_config = 1; size_config <= 10; ++size_config) {
+    // Get the config for tuning
+    auto tuning = rs_manual_tuning::GetTuning(data_file, size_config);
+
+    // Build RS
+    auto build_begin = chrono::high_resolution_clock::now();
+    NonOwningMultiMap<KeyType, uint64_t> map(elements, tuning.first, tuning.second);
+    auto build_end = chrono::high_resolution_clock::now();
+    uint64_t build_ns = chrono::duration_cast<chrono::nanoseconds>(build_end - build_begin).count();
+
+    // Run queries
+    auto lookup_begin = chrono::high_resolution_clock::now();
+    for (const Lookup<KeyType>& lookup_iter : lookups) {
+      uint64_t sum = map.sum_up(lookup_iter.key);
+      if (sum != lookup_iter.value) {
+        cerr << "wrong result!" << endl;
+        throw "error";
+      }
+    }
+    auto lookup_end = chrono::high_resolution_clock::now();
+    uint64_t lookup_ns = chrono::duration_cast<chrono::nanoseconds>(lookup_end - lookup_begin).count();
+
+    cout << "RESULT:"
+         << " data_file: " << data_file
+         << " lookup_file: " << lookup_file
+         << " radix_bit_count: " << tuning.first
+         << " spline_error: " << tuning.second
+         << " size_config: " << size_config
+         << " used_memory[MB]: " << (map.GetSizeInByte() / 1000) / 1000.0
+         << " build_time[s]: " << (build_ns / 1000 / 1000) / 1000.0
+         << " ns/lookup: " << lookup_ns / lookups.size() << endl;
+  }
+}
+
 }
 
 int main(int argc, char** argv) {
@@ -236,39 +289,10 @@ int main(int argc, char** argv) {
   const string data_file = argv[1];
   const string lookup_file = argv[2];
 
-  // Load data
-  vector<uint64_t> keys = util::load_data<uint64_t>(data_file);
-  vector<pair<uint64_t, uint64_t>> elements = util::add_values(keys);
-  vector<Lookup<uint64_t>> lookups = util::load_data<Lookup<uint64_t>>(lookup_file);
-
-  // Run benchmark
-  for (uint32_t size_config = 1; size_config <= 10; ++size_config) {
-    // Build RS
-    auto build_begin = chrono::high_resolution_clock::now();
-    auto tuning = rs_manual_tuning::GetTuning(data_file, size_config);
-    NonOwningMultiMap<uint64_t, uint64_t> map(elements, tuning.first, tuning.second);
-    auto build_end = chrono::high_resolution_clock::now();
-
-    // Run queries
-    auto lookup_begin = chrono::high_resolution_clock::now();
-    for (const Lookup<uint64_t>& lookup_iter : lookups) {
-      const uint64_t sum = map.sum_up(lookup_iter.key);
-      if (sum != lookup_iter.value) {
-        cerr << "wrong result!" << endl;
-        throw "error";
-      }
-    }
-    auto lookup_end = chrono::high_resolution_clock::now();
-
-    uint64_t build_ns = chrono::duration_cast<chrono::nanoseconds>(build_end - build_begin).count();
-    uint64_t lookup_ns = chrono::duration_cast<chrono::nanoseconds>(lookup_end - lookup_begin).count();
-    cout << "RESULT:"
-         << " data_file: " << data_file
-         << " lookup_file: " << lookup_file
-         << " size_config: " << size_config
-         << " used_memory[MB]: " << (map.GetSizeInByte() / 1000) / 1000.0
-         << " build_time[s]: " << (build_ns / 1000 / 1000) / 1000.0
-         << " ns/lookup: " << lookup_ns / lookups.size() << endl;
+  if (data_file.find("32") != string::npos) {
+    Run<uint32_t>(data_file, lookup_file);
+  } else {
+    Run<uint64_t>(data_file, lookup_file);
   }
 
   return 0;

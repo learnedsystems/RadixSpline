@@ -5,6 +5,7 @@
 
 #include "gtest/gtest.h"
 #include "include/rs/builder.h"
+#include "include/rs/serializer.h"
 
 const size_t kNumKeys = 1000;
 // Number of iterations (seeds) of random positive and negative test cases.
@@ -231,6 +232,26 @@ TYPED_TEST(RadixSplineTest, AllMaxKeys) {
   const auto rs = CreateRadixSpline(keys);
   EXPECT_TRUE(BoundContains(keys, rs.GetSearchBound(key), key))
       << "key: " << key;
+}
+
+TYPED_TEST(RadixSplineTest, Serialize) {
+  using KeyType = typename TestFixture::KeyType;
+  const auto keys = CreateDenseKeys<KeyType>();
+  const auto rs = CreateRadixSpline(keys);
+
+  rs::Serializer<KeyType> serializer;
+
+  // Serialize.
+  std::string bytes;
+  serializer.ToBytes(rs, &bytes);
+
+  // Deserialize.
+  const auto rs_deserialized = serializer.FromBytes(bytes);
+
+  ASSERT_EQ(rs.GetSize(), rs_deserialized.GetSize());
+  for (const auto& key : keys)
+    ASSERT_EQ(rs.GetEstimatedPosition(key),
+              rs_deserialized.GetEstimatedPosition(key));
 }
 
 }  // namespace

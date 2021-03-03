@@ -1,7 +1,7 @@
 RadixSpline: A Single-Pass Learned Index
 ====
 
-![](https://github.com/learnedsystems/radixspline/workflows/CI/badge.svg)
+![](https://github.com/learnedsystems/RadixSpline/workflows/CI/badge.svg)
 
 A read-only learned index structure that can be built in a single pass over sorted data. Can be used as a drop-in replacement for ``std::multimap``. Currently limited to `uint32_t` and `uint64_t` data types.
 

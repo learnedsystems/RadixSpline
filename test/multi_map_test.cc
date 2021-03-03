@@ -1,15 +1,16 @@
-#include <unordered_set>
+#include "include/rs/multi_map.h"
+
 #include <random>
+#include <unordered_set>
 
 #include "gtest/gtest.h"
-#include "include/rs/multi_map.h"
 
 namespace {
 
 TEST(MultiMapTest, SimpleFind) {
   std::vector<std::pair<uint64_t, char>> data = {{1ull, 'a'},
                                                  {12ull, 'c'},
-                                                 {7ull, 'b'}, // Unsorted.
+                                                 {7ull, 'b'},  // Unsorted.
                                                  {42ull, 'd'}};
   rs::MultiMap<uint64_t, char> rs_multi_map(data.begin(), data.end());
 
@@ -39,7 +40,7 @@ TEST(MultiMapTest, SimpleFind) {
 TEST(MultiMapTest, LowerBoundFind) {
   std::vector<std::pair<uint64_t, char>> data = {{1ull, 'a'},
                                                  {12ull, 'c'},
-                                                 {7ull, 'b'}, // Unsorted.
+                                                 {7ull, 'b'},  // Unsorted.
                                                  {42ull, 'd'}};
   rs::MultiMap<uint64_t, char> rs_multi_map(data.begin(), data.end());
 

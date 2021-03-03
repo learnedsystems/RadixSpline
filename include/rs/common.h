@@ -6,7 +6,7 @@
 namespace rs {
 
 // A CDF coordinate.
-template<class KeyType>
+template <class KeyType>
 struct Coord {
   KeyType x;
   double y;
@@ -14,7 +14,7 @@ struct Coord {
 
 struct SearchBound {
   size_t begin;
-  size_t end; // Exclusive.
+  size_t end;  // Exclusive.
 };
 
-} // namespace rs
+}  // namespace rs

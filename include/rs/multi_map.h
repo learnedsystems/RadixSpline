@@ -9,8 +9,9 @@
 
 namespace rs {
 
-// A drop-in replacement for std::multimap. Internally creates a sorted copy of the data.
-template<class KeyType, class ValueType>
+// A drop-in replacement for std::multimap. Internally creates a sorted copy of
+// the data.
+template <class KeyType, class ValueType>
 class MultiMap {
  public:
   // Member type definitions.
@@ -22,8 +23,9 @@ class MultiMap {
   using const_iterator = typename std::vector<value_type>::const_iterator;
 
   // Constructor, creates a copy of the data.
-  template<class BidirIt>
-  MultiMap(BidirIt first, BidirIt last, size_t num_radix_bits = 18, size_t max_error = 32);
+  template <class BidirIt>
+  MultiMap(BidirIt first, BidirIt last, size_t num_radix_bits = 18,
+           size_t max_error = 32);
 
   // Lookup functions, like in std::multimap.
   const_iterator find(KeyType key) const;
@@ -41,16 +43,16 @@ class MultiMap {
   RadixSpline<KeyType> rs_;
 };
 
-template<class KeyType, class ValueType>
-template<class BidirIt>
-MultiMap<KeyType, ValueType>::MultiMap(BidirIt first,
-                                       BidirIt last,
+template <class KeyType, class ValueType>
+template <class BidirIt>
+MultiMap<KeyType, ValueType>::MultiMap(BidirIt first, BidirIt last,
                                        size_t num_radix_bits,
                                        size_t max_error) {
   // Empty spline.
   if (first == last) {
-    rs::Builder<KeyType>
-        rsb(std::numeric_limits<KeyType>::min(), std::numeric_limits<KeyType>::max(), num_radix_bits, max_error);
+    rs::Builder<KeyType> rsb(std::numeric_limits<KeyType>::min(),
+                             std::numeric_limits<KeyType>::max(),
+                             num_radix_bits, max_error);
     rs_ = rsb.Finalize();
     return;
   }
@@ -66,9 +68,10 @@ MultiMap<KeyType, ValueType>::MultiMap(BidirIt first,
 
   // Sort if necessary.
   if (!is_sorted) {
-    std::sort(data_.begin(),
-              data_.end(),
-              [](const value_type& lhs, const value_type& rhs) { return lhs.first < rhs.first; });
+    std::sort(data_.begin(), data_.end(),
+              [](const value_type& lhs, const value_type& rhs) {
+                return lhs.first < rhs.first;
+              });
   }
 
   // Create spline builder.
@@ -83,21 +86,22 @@ MultiMap<KeyType, ValueType>::MultiMap(BidirIt first,
   rs_ = rsb.Finalize();
 }
 
-template<class KeyType, class ValueType>
-typename MultiMap<KeyType, ValueType>::const_iterator MultiMap<KeyType,
-                                                               ValueType>::lower_bound(KeyType key) const {
+template <class KeyType, class ValueType>
+typename MultiMap<KeyType, ValueType>::const_iterator
+MultiMap<KeyType, ValueType>::lower_bound(KeyType key) const {
   SearchBound bound = rs_.GetSearchBound(key);
   return std::lower_bound(data_.begin() + bound.begin,
-                          data_.begin() + bound.end,
-                          key,
-                          [](const value_type& lhs, const KeyType& rhs) { return lhs.first < rhs; });
+                          data_.begin() + bound.end, key,
+                          [](const value_type& lhs, const KeyType& rhs) {
+                            return lhs.first < rhs;
+                          });
 }
 
-template<class KeyType, class ValueType>
-typename MultiMap<KeyType, ValueType>::const_iterator MultiMap<KeyType,
-                                                               ValueType>::find(KeyType key) const {
+template <class KeyType, class ValueType>
+typename MultiMap<KeyType, ValueType>::const_iterator
+MultiMap<KeyType, ValueType>::find(KeyType key) const {
   auto iter = lower_bound(key);
   return iter != data_.end() && iter->first == key ? iter : data_.end();
 }
 
-} // namespace rs
+}  // namespace rs

@@ -1,16 +1,17 @@
-#include "include/rs/multi_map.h"
-
-#include <iostream>
-#include <fstream>
-#include <map>
 #include <chrono>
+#include <fstream>
+#include <iostream>
+#include <map>
+
+#include "include/rs/multi_map.h"
 
 using namespace std;
 
 namespace rs_manual_tuning {
 
 // Returns <num_radix_bits, max_error>
-pair<uint64_t, uint64_t> GetTuning(const string& data_filename, uint32_t size_scale) {
+pair<uint64_t, uint64_t> GetTuning(const string& data_filename,
+                                   uint32_t size_scale) {
   string cut = data_filename;
 
   // Cut the prefix of the filename
@@ -23,131 +24,66 @@ pair<uint64_t, uint64_t> GetTuning(const string& data_filename, uint32_t size_sc
 
   // Books (or amazon in the paper)
   if (cut == "books_200M_uint32") {
-    Configs configs = {{26, 3},
-                       {22, 3},
-                       {20, 5},
-                       {23, 15},
-                       {22, 25},
-                       {20, 30},
-                       {16, 40},
-                       {19, 95},
-                       {15, 95},
-                       {9, 135}};
+    Configs configs = {{26, 3},  {22, 3},  {20, 5},  {23, 15}, {22, 25},
+                       {20, 30}, {16, 40}, {19, 95}, {15, 95}, {9, 135}};
     return configs[size_scale - 1];
   }
 
   if (cut == "books_200M_uint64") {
-    Configs configs = {{25, 2},
-                       {22, 4},
-                       {23, 8},
-                       {24, 20},
-                       {22, 20},
-                       {22, 45},
-                       {15, 40},
-                       {20, 95},
-                       {16, 95},
-                       {12, 135}};
+    Configs configs = {{25, 2},  {22, 4},  {23, 8},  {24, 20}, {22, 20},
+                       {22, 45}, {15, 40}, {20, 95}, {16, 95}, {12, 135}};
     return configs[size_scale - 1];
   }
 
   if (cut == "books_400M_uint64") {
-    Configs configs = {{19, 4},
-                       {24, 10},
-                       {25, 25},
-                       {24, 35},
-                       {22, 40},
-                       {22, 85},
-                       {18, 85},
-                       {20, 190},
-                       {13, 185},
-                       {4, 270}};
+    Configs configs = {{19, 4},  {24, 10}, {25, 25},  {24, 35},  {22, 40},
+                       {22, 85}, {18, 85}, {20, 190}, {13, 185}, {4, 270}};
     return configs[size_scale - 1];
   }
 
   if (cut == "books_600M_uint64") {
-    Configs configs = {{19, 6},
-                       {24, 15},
-                       {22, 25},
-                       {24, 55},
-                       {22, 60},
-                       {22, 125},
-                       {21, 190},
-                       {14, 185},
-                       {17, 300},
-                       {17, 300}};
+    Configs configs = {{19, 6},   {24, 15},  {22, 25},  {24, 55},  {22, 60},
+                       {22, 125}, {21, 190}, {14, 185}, {17, 300}, {17, 300}};
     return configs[size_scale - 1];
   }
 
   if (cut == "books_800M_uint64") {
-    Configs configs = {{21, 8},
-                       {24, 20},
-                       {25, 50},
-                       {24, 70},
-                       {22, 80},
-                       {21, 125},
-                       {21, 255},
-                       {20, 380},
-                       {15, 375},
-                       {15, 375}};
+    Configs configs = {{21, 8},   {24, 20},  {25, 50},  {24, 70},  {22, 80},
+                       {21, 125}, {21, 255}, {20, 380}, {15, 375}, {15, 375}};
     return configs[size_scale - 1];
   }
 
   // Facebook
   if (cut == "fb_200M_uint64") {
-    Configs configs = {{20, 2},
-                       {25, 9},
-                       {22, 10},
-                       {23, 35},
-                       {21, 45},
-                       {18, 70},
-                       {20, 265},
-                       {15, 260},
-                       {15, 260},
-                       {15, 260}};
+    Configs configs = {{20, 2},  {25, 9},   {22, 10},  {23, 35},  {21, 45},
+                       {18, 70}, {20, 265}, {15, 260}, {15, 260}, {15, 260}};
     return configs[size_scale - 1];
   }
 
   // OSM
   if (cut == "osm_cellids_200M_uint64") {
-    Configs configs = {{27, 7},
-                       {24, 4},
-                       {25, 25},
-                       {24, 50},
-                       {23, 95},
-                       {22, 185},
-                       {21, 365},
-                       {15, 165},
-                       {13, 325},
-                       {13, 325}};
+    Configs configs = {{27, 7},   {24, 4},   {25, 25},  {24, 50},  {23, 95},
+                       {22, 185}, {21, 365}, {15, 165}, {13, 325}, {13, 325}};
     return configs[size_scale - 1];
   }
 
   // Wiki
   if (cut == "wiki_ts_200M_uint64") {
-    Configs configs = {{27, 8},
-                       {26, 15},
-                       {25, 20},
-                       {24, 25},
-                       {23, 40},
-                       {22, 70},
-                       {21, 125},
-                       {20, 250},
-                       {11, 45},
-                       {17, 135}};
+    Configs configs = {{27, 8},  {26, 15},  {25, 20},  {24, 25}, {23, 40},
+                       {22, 70}, {21, 125}, {20, 250}, {11, 45}, {17, 135}};
     return configs[size_scale - 1];
   }
 
   cerr << "No tuning config for this file and size_config" << endl;
   throw;
 }
-}
+}  // namespace rs_manual_tuning
 
 namespace util {
 
 // Loads values from binary file into vector.
-template<typename T>
-static vector<T> load_data(const string& filename,
-                           bool print = true) {
+template <typename T>
+static vector<T> load_data(const string& filename, bool print = true) {
   vector<T> data;
   ifstream in(filename, ios::binary);
   if (!in.is_open()) {
@@ -165,7 +101,7 @@ static vector<T> load_data(const string& filename,
 }
 
 // Generates deterministic values for keys.
-template<class KeyType>
+template <class KeyType>
 static vector<pair<KeyType, uint64_t>> add_values(const vector<KeyType>& keys) {
   vector<pair<KeyType, uint64_t>> result;
   result.reserve(keys.size());
@@ -180,16 +116,17 @@ static vector<pair<KeyType, uint64_t>> add_values(const vector<KeyType>& keys) {
   return result;
 }
 
-}
+}  // namespace util
 
 namespace {
 
-template<class KeyType, class ValueType>
+template <class KeyType, class ValueType>
 class NonOwningMultiMap {
  public:
   using element_type = pair<KeyType, ValueType>;
 
-  NonOwningMultiMap(const vector<element_type>& elements, size_t num_radix_bits = 18, size_t max_error = 32)
+  NonOwningMultiMap(const vector<element_type>& elements,
+                    size_t num_radix_bits = 18, size_t max_error = 32)
       : data_(elements) {
     assert(elements.size() > 0);
 
@@ -207,10 +144,10 @@ class NonOwningMultiMap {
 
   typename vector<element_type>::const_iterator lower_bound(KeyType key) const {
     rs::SearchBound bound = rs_.GetSearchBound(key);
-    return ::lower_bound(data_.begin() + bound.begin,
-                         data_.begin() + bound.end,
-                         key,
-                         [](const element_type& lhs, const KeyType& rhs) { return lhs.first < rhs; });
+    return ::lower_bound(data_.begin() + bound.begin, data_.begin() + bound.end,
+                         key, [](const element_type& lhs, const KeyType& rhs) {
+                           return lhs.first < rhs;
+                         });
   }
 
   uint64_t sum_up(KeyType key) const {
@@ -223,27 +160,26 @@ class NonOwningMultiMap {
     return result;
   }
 
-  size_t GetSizeInByte() const {
-    return rs_.GetSize();
-  }
+  size_t GetSizeInByte() const { return rs_.GetSize(); }
 
  private:
   const vector<element_type>& data_;
   rs::RadixSpline<KeyType> rs_;
 };
 
-template<class KeyType>
+template <class KeyType>
 struct Lookup {
   KeyType key;
   uint64_t value;
 };
 
-template<class KeyType>
+template <class KeyType>
 void Run(const string& data_file, const string lookup_file) {
   // Load data
   vector<KeyType> keys = util::load_data<KeyType>(data_file);
   vector<pair<KeyType, uint64_t>> elements = util::add_values(keys);
-  vector<Lookup<KeyType>> lookups = util::load_data<Lookup<KeyType>>(lookup_file);
+  vector<Lookup<KeyType>> lookups =
+      util::load_data<Lookup<KeyType>>(lookup_file);
 
   for (uint32_t size_config = 1; size_config <= 10; ++size_config) {
     // Get the config for tuning
@@ -251,9 +187,12 @@ void Run(const string& data_file, const string lookup_file) {
 
     // Build RS
     auto build_begin = chrono::high_resolution_clock::now();
-    NonOwningMultiMap<KeyType, uint64_t> map(elements, tuning.first, tuning.second);
+    NonOwningMultiMap<KeyType, uint64_t> map(elements, tuning.first,
+                                             tuning.second);
     auto build_end = chrono::high_resolution_clock::now();
-    uint64_t build_ns = chrono::duration_cast<chrono::nanoseconds>(build_end - build_begin).count();
+    uint64_t build_ns =
+        chrono::duration_cast<chrono::nanoseconds>(build_end - build_begin)
+            .count();
 
     // Run queries
     auto lookup_begin = chrono::high_resolution_clock::now();
@@ -265,11 +204,12 @@ void Run(const string& data_file, const string lookup_file) {
       }
     }
     auto lookup_end = chrono::high_resolution_clock::now();
-    uint64_t lookup_ns = chrono::duration_cast<chrono::nanoseconds>(lookup_end - lookup_begin).count();
+    uint64_t lookup_ns =
+        chrono::duration_cast<chrono::nanoseconds>(lookup_end - lookup_begin)
+            .count();
 
     cout << "RESULT:"
-         << " data_file: " << data_file
-         << " lookup_file: " << lookup_file
+         << " data_file: " << data_file << " lookup_file: " << lookup_file
          << " radix_bit_count: " << tuning.first
          << " spline_error: " << tuning.second
          << " size_config: " << size_config
@@ -279,7 +219,7 @@ void Run(const string& data_file, const string lookup_file) {
   }
 }
 
-}
+}  // namespace
 
 int main(int argc, char** argv) {
   if (argc != 3) {

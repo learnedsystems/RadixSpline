@@ -20,16 +20,17 @@ void RadixSplineExample() {
 
   // Search using RadixSpline.
   rs::SearchBound bound = rs.GetSearchBound(8128);
-  cout << "The search key is in the range: ["
-       << bound.begin << ", " << bound.end << ")" << endl;
+  cout << "The search key is in the range: [" << bound.begin << ", "
+       << bound.end << ")" << endl;
   auto start = begin(keys) + bound.begin, last = begin(keys) + bound.end;
-  cout << "The key is at position: " << std::lower_bound(start, last, 8128) - begin(keys) << endl;
+  cout << "The key is at position: "
+       << std::lower_bound(start, last, 8128) - begin(keys) << endl;
 }
 
 void MultiMapExample() {
   vector<pair<uint64_t, char>> data = {{1ull, 'a'},
                                        {12ull, 'b'},
-                                       {7ull, 'c'}, // Unsorted.
+                                       {7ull, 'c'},  // Unsorted.
                                        {42ull, 'd'}};
   rs::MultiMap<uint64_t, char> map(begin(data), end(data));
 

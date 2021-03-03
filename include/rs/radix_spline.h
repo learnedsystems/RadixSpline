@@ -102,6 +102,9 @@ class RadixSpline {
 
   std::vector<uint32_t> radix_table_;
   std::vector<rs::Coord<KeyType>> spline_points_;
+
+  template <typename>
+  friend class Serializer;
 };
 
 }  // namespace rs

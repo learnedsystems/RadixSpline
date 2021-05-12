@@ -12,69 +12,125 @@ namespace rs_manual_tuning {
 // Returns <num_radix_bits, max_error>
 pair<uint64_t, uint64_t> GetTuning(const string& data_filename,
                                    uint32_t size_scale) {
-  string cut = data_filename;
+  assert(size_scale >= 1 && size_scale <= 10);
+
+  string dataset = data_filename;
 
   // Cut the prefix of the filename
-  size_t pos = cut.find_last_of('/');
+  size_t pos = dataset.find_last_of('/');
   if (pos != string::npos) {
-    cut.erase(cut.begin(), cut.begin() + pos + 1);
+    dataset.erase(dataset.begin(), dataset.begin() + pos + 1);
   }
 
   using Configs = const vector<pair<size_t, size_t>>;
 
+  if (dataset == "normal_200M_uint32") {
+    Configs configs = {{10, 6}, {15, 1}, {16, 1}, {18, 1}, {20, 1},
+                       {21, 1}, {24, 1}, {25, 1}, {26, 1}, {26, 1}};
+    return configs[10 - size_scale];
+  }
+
+  if (dataset == "normal_200M_uint64") {
+    Configs configs = {{14, 2}, {16, 1}, {16, 1}, {20, 1}, {22, 1},
+                       {24, 1}, {26, 1}, {26, 1}, {28, 1}, {28, 1}};
+    return configs[10 - size_scale];
+  }
+
+  if (dataset == "lognormal_200M_uint32") {
+    Configs configs = {{12, 20}, {16, 3}, {16, 2}, {18, 1}, {20, 1},
+                       {22, 1},  {24, 1}, {24, 1}, {26, 1}, {28, 1}};
+    return configs[10 - size_scale];
+  }
+
+  if (dataset == "lognormal_200M_uint64") {
+    Configs configs = {{12, 3}, {18, 1}, {18, 1}, {20, 1}, {22, 1},
+                       {24, 1}, {26, 1}, {26, 1}, {28, 1}, {28, 1}};
+    return configs[10 - size_scale];
+  }
+
+  if (dataset == "uniform_dense_200M_uint32") {
+    Configs configs = {{4, 2},  {16, 2}, {18, 1}, {20, 1}, {20, 1},
+                       {22, 2}, {24, 1}, {26, 3}, {26, 3}, {28, 2}};
+    return configs[10 - size_scale];
+  }
+
+  if (dataset == "uniform_dense_200M_uint64") {
+    Configs configs = {{4, 2},  {16, 1}, {16, 1}, {20, 1}, {22, 1},
+                       {24, 1}, {24, 1}, {26, 1}, {28, 1}, {28, 1}};
+    return configs[10 - size_scale];
+  }
+
+  if (dataset == "uniform_dense_200M_uint64") {
+    Configs configs = {{4, 2},  {16, 1}, {16, 1}, {20, 1}, {22, 1},
+                       {24, 1}, {24, 1}, {26, 1}, {28, 1}, {28, 1}};
+    return configs[10 - size_scale];
+  }
+
+  if (dataset == "uniform_sparse_200M_uint32") {
+    Configs configs = {{12, 220}, {14, 100}, {14, 80}, {16, 30}, {18, 20},
+                       {20, 10},  {20, 8},   {20, 5},  {24, 3},  {26, 1}};
+    return configs[10 - size_scale];
+  }
+
+  if (dataset == "uniform_sparse_200M_uint64") {
+    Configs configs = {{12, 150}, {14, 70}, {16, 50}, {18, 20}, {20, 20},
+                       {20, 9},   {20, 5},  {24, 3},  {26, 2},  {28, 1}};
+    return configs[10 - size_scale];
+  }
+
   // Books (or amazon in the paper)
-  if (cut == "books_200M_uint32") {
-    Configs configs = {{26, 3},  {22, 3},  {20, 5},  {23, 15}, {22, 25},
-                       {20, 30}, {16, 40}, {19, 95}, {15, 95}, {9, 135}};
-    return configs[size_scale - 1];
+  if (dataset == "books_200M_uint32") {
+    Configs configs = {{14, 250}, {14, 250}, {16, 190}, {18, 80}, {18, 50},
+                       {22, 20},  {22, 9},   {22, 8},   {24, 3},  {28, 2}};
+    return configs[10 - size_scale];
   }
 
-  if (cut == "books_200M_uint64") {
-    Configs configs = {{25, 2},  {22, 4},  {23, 8},  {24, 20}, {22, 20},
-                       {22, 45}, {15, 40}, {20, 95}, {16, 95}, {12, 135}};
-    return configs[size_scale - 1];
+  if (dataset == "books_200M_uint64") {
+    Configs configs = {{12, 380}, {16, 170}, {16, 110}, {20, 50}, {20, 30},
+                       {22, 20},  {22, 10},  {24, 3},   {26, 3},  {28, 2}};
+    return configs[10 - size_scale];
   }
 
-  if (cut == "books_400M_uint64") {
-    Configs configs = {{19, 4},  {24, 10}, {25, 25},  {24, 35},  {22, 40},
-                       {22, 85}, {18, 85}, {20, 190}, {13, 185}, {4, 270}};
-    return configs[size_scale - 1];
+  if (dataset == "books_400M_uint64") {
+    Configs configs = {{16, 220}, {16, 220}, {18, 160}, {20, 60}, {20, 40},
+                       {22, 20},  {22, 7},   {26, 3},   {28, 2},  {28, 1}};
+    return configs[10 - size_scale];
   }
 
-  if (cut == "books_600M_uint64") {
-    Configs configs = {{19, 6},   {24, 15},  {22, 25},  {24, 55},  {22, 60},
-                       {22, 125}, {21, 190}, {14, 185}, {17, 300}, {17, 300}};
-    return configs[size_scale - 1];
+  if (dataset == "books_600M_uint64") {
+    Configs configs = {{18, 330}, {18, 330}, {18, 190}, {20, 70}, {22, 50},
+                       {22, 20},  {24, 7},   {26, 3},   {28, 2},  {28, 1}};
+    return configs[10 - size_scale];
   }
 
-  if (cut == "books_800M_uint64") {
-    Configs configs = {{21, 8},   {24, 20},  {25, 50},  {24, 70},  {22, 80},
-                       {21, 125}, {21, 255}, {20, 380}, {15, 375}, {15, 375}};
-    return configs[size_scale - 1];
+  if (dataset == "books_800M_uint64") {
+    Configs configs = {{18, 320}, {18, 320}, {18, 200}, {22, 80}, {22, 60},
+                       {22, 20},  {24, 9},   {26, 3},   {28, 3},  {28, 3}};
+    return configs[10 - size_scale];
   }
 
   // Facebook
-  if (cut == "fb_200M_uint64") {
-    Configs configs = {{20, 2},  {25, 9},   {22, 10},  {23, 35},  {21, 45},
-                       {18, 70}, {20, 265}, {15, 260}, {15, 260}, {15, 260}};
-    return configs[size_scale - 1];
+  if (dataset == "fb_200M_uint64") {
+    Configs configs = {{8, 140}, {8, 140}, {8, 140}, {8, 140}, {10, 90},
+                       {22, 90}, {24, 70}, {26, 80}, {26, 7},  {28, 80}};
+    return configs[10 - size_scale];
   }
 
   // OSM
-  if (cut == "osm_cellids_200M_uint64") {
-    Configs configs = {{27, 7},   {24, 4},   {25, 25},  {24, 50},  {23, 95},
-                       {22, 185}, {21, 365}, {15, 165}, {13, 325}, {13, 325}};
-    return configs[size_scale - 1];
+  if (dataset == "osm_cellids_200M_uint64") {
+    Configs configs = {{20, 160}, {20, 160}, {20, 160}, {20, 160}, {20, 80},
+                       {24, 40},  {24, 20},  {26, 8},   {26, 3},   {28, 2}};
+    return configs[10 - size_scale];
   }
 
   // Wiki
-  if (cut == "wiki_ts_200M_uint64") {
-    Configs configs = {{27, 8},  {26, 15},  {25, 20},  {24, 25}, {23, 40},
-                       {22, 70}, {21, 125}, {20, 250}, {11, 45}, {17, 135}};
-    return configs[size_scale - 1];
+  if (dataset == "wiki_ts_200M_uint64") {
+    Configs configs = {{14, 100}, {14, 100}, {16, 60}, {18, 20}, {20, 20},
+                       {20, 9},   {20, 5},   {22, 3},  {26, 2},  {26, 1}};
+    return configs[10 - size_scale];
   }
 
-  cerr << "No tuning config for this file and size_config" << endl;
+  cerr << "No tuning config for this dataset" << endl;
   throw;
 }
 }  // namespace rs_manual_tuning

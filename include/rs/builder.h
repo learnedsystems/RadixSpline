@@ -137,8 +137,8 @@ class Builder {
     if (curr_num_distinct_keys_ == 2) {
       // Initialize `upper_limit_` and `lower_limit_` using the second CDF
       // point.
-      SetUpperLimit(key, position + max_error_);
-      SetLowerLimit(key, (position < max_error_) ? 0 : position - max_error_);
+      SetUpperLimit(key, position + max_error_ + 1);
+      SetLowerLimit(key, (position < max_error_ + 1) ? 0 : position - max_error_ - 1);
       RememberPreviousCDFPoint(key, position);
       return;
     }
@@ -147,8 +147,8 @@ class Builder {
     const Coord<KeyType>& last = spline_points_.back();
 
     // Compute current `upper_y` and `lower_y`.
-    const double upper_y = position + max_error_;
-    const double lower_y = (position < max_error_) ? 0 : position - max_error_;
+    const double upper_y = position + max_error_ + 1;
+    const double lower_y = (position < max_error_ + 1) ? 0 : position - max_error_ - 1;
 
     // Compute differences.
     assert(upper_limit_.x >= last.x);

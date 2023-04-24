@@ -55,9 +55,9 @@ class RadixSpline {
     const size_t estimate = GetEstimatedPosition(key);
     const size_t begin = (estimate < max_error_) ? 0 : (estimate - max_error_);
     // `end` is exclusive.
-    const size_t end = (estimate + max_error_ + 2 > num_keys_)
+    const size_t end = (estimate + max_error_ + 3 > num_keys_)
                            ? num_keys_
-                           : (estimate + max_error_ + 2);
+                           : (estimate + max_error_ + 3);
     return SearchBound{begin, end};
   }
 

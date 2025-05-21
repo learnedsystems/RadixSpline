@@ -16,6 +16,14 @@ include_directories(
 )
 
 file(GLOB INCLUDE_H "include/rs/*.h")
+
+# Create a library target for RadixSpline
+add_library(radix_spline_lib INTERFACE)
+target_include_directories(radix_spline_lib INTERFACE include)
+# It's good practice to also ensure the library 'depends' on its source files,
+# even for an INTERFACE library, to help CMake track changes.
+target_sources(radix_spline_lib INTERFACE ${INCLUDE_H})
+
 set(EXAMPLE_FILES example.cc)
 set(BENCH_FILES bench.cc)
 file(GLOB TEST_CC "test/*_test.cc")

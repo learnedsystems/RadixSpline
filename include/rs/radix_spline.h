@@ -33,7 +33,7 @@ class RadixSpline {
   double GetEstimatedPosition(const KeyType key) const {
     // Truncate to data boundaries.
     if (key <= min_key_) return 0;
-    if (key >= max_key_) return num_keys_ - 1;
+    if (key > max_key_) return num_keys_ - 1;
 
     // Find spline segment with `key` ∈ (spline[index - 1], spline[index]].
     const size_t index = GetSplineSegment(key);

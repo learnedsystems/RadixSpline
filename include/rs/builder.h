@@ -45,9 +45,11 @@ class Builder {
     // Last key needs to be equal to `max_key_`.
     assert(curr_num_keys_ == 0 || prev_key_ == max_key_);
 
-    // Ensure that `prev_key_` (== `max_key_`) is last key on spline.
+    // Ensure that `prev_key_` (== `max_key_`) is last key on spline. Use its
+    // CDF point, i.e. the position of its first occurrence like every other
+    // spline point; `prev_position_` is the position of its last occurrence.
     if (curr_num_keys_ > 0 && spline_points_.back().x != prev_key_)
-      AddKeyToSpline(prev_key_, prev_position_);
+      AddKeyToSpline(prev_point_.x, prev_point_.y);
 
     // Maybe even size the radix based on max key right from the start
     FinalizeRadixTable();

@@ -45,9 +45,11 @@ class Builder {
     // Last key needs to be equal to `max_key_`.
     assert(curr_num_keys_ == 0 || prev_key_ == max_key_);
 
-    // Ensure that `prev_key_` (== `max_key_`) is last key on spline.
+    // Ensure that `prev_key_` (== `max_key_`) is last key on spline. Use its
+    // CDF point, i.e. the position of its first occurrence like every other
+    // spline point; `prev_position_` is the position of its last occurrence.
     if (curr_num_keys_ > 0 && spline_points_.back().x != prev_key_)
-      AddKeyToSpline(prev_key_, prev_position_);
+      AddKeyToSpline(prev_point_.x, prev_point_.y);
 
     // Maybe even size the radix based on max key right from the start
     FinalizeRadixTable();
@@ -131,7 +133,18 @@ class Builder {
       return;
     }
 
-    // New CDF point.
+    // A run of duplicates of `prev_key_` ends at `position` - 1. The CDF point
+    // of `prev_key_` is its first occurrence, but keys in (prev_key_, key) are
+    // absent and their lower bound is `position`. Add the CDF point
+    // (prev_key_ + 1, position) so that the spline stays within the error bound
+    // for them too; otherwise the search bound misses them when the run is long.
+    if (position - prev_point_.y >= 2 && prev_key_ + 1 < key)
+      AddCDFPoint(prev_key_ + 1, position);
+    AddCDFPoint(key, position);
+  }
+
+  // Adds a new CDF point (strictly larger key than the previous CDF point).
+  void AddCDFPoint(KeyType key, double position) {
     ++curr_num_distinct_keys_;
 
     if (curr_num_distinct_keys_ == 2) {
